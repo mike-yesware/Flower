@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <FastLED.h>
-#include <ESP8266WiFi.h>
+#include <WiFiManager.h>
+#include <AsyncMqttClient.h>
+#include <NetworkSetup.h>
 
 // Use qsuba for smooth pixel colouring and qsubd for non-smooth pixel colouring
 #define qsubd(x, b)  ((x>b)?b:0)      // Digital unsigned subtraction macro. if result <0, then => 0. Otherwise, take on fixed value.
@@ -48,18 +50,15 @@ typedef void (*SimplePatternList[])();
 SimplePatternList patterns = { rainbowPetals, plasma, sineMove, rainbowFlower, insideOut };
 uint8_t currentPatternNumber = 0;
 
-void stopWiFiAndSleep() {
-  WiFi.disconnect();
-  WiFi.mode(WIFI_OFF);
-  WiFi.forceSleepBegin();
-  delay(1);
+void setupLEDs() {
+  FastLED.addLeds<APA102, DATA_PIN, CLOCK_PIN, BGR>(leds, NUM_LEDS);
+  FastLED.setBrightness(255);
 }
 
 void setup() {
-  stopWiFiAndSleep();
-
-  FastLED.addLeds<APA102, DATA_PIN, CLOCK_PIN, BGR>(leds, NUM_LEDS);
-  FastLED.setBrightness(255);
+  // stopWiFiAndSleep();
+  setupLEDs();
+  setupWiFi();
 }
 
 void nextPattern() {
