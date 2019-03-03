@@ -1,12 +1,13 @@
 #ifndef FLOWER_NETWORK_SETUP_H
 #define FLOWER_NETWORK_SETUP_H
 
-#include <Arduino.h>
-#include <WiFiManager.h>
-#include <AsyncMqttClient.h>
+#include <Homie.h>
+#include <Syslog.h>
+
+#include <globals.h>
 
 void stopWiFiAndSleep();
-void setupWiFi();
-void setupMQTT();
+void setupSyslog();
+void setupNetwork();
 
 #endif  // FLOWER_NETWORK_SETUP_H
