@@ -1,5 +1,10 @@
 #include <NetworkSetup.h>
 
+WiFiUDP udpClient;
+Syslog syslog(udpClient, "192.168.7.200", 514, "Little", "flower", LOG_KERN | LOG_INFO, SYSLOG_PROTO_BSD);
+
+HomieNode flowerNode("display", "sketch");
+
 void stopWiFiAndSleep() {
   WiFi.disconnect();
   WiFi.mode(WIFI_OFF);
@@ -7,13 +12,8 @@ void stopWiFiAndSleep() {
   delay(1);
 }
 
-void setupWiFi() {
-  String apSSID = "Flower" + String(ESP.getChipId());
-
-  WiFiManager wifiManager;
-  wifiManager.autoConnect(apSSID.c_str(), "fl0werGarden");
-}
-
-void setupMQTT() {
-
+void setupNetwork() {
+  Homie_setFirmware("flower", "0.0.1");
+  Homie_setBrand("garden");
+  Homie.setup();
 }

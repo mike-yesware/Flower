@@ -1,21 +1,23 @@
 #include <Arduino.h>
 #include <FastLED.h>
-#include <WiFiManager.h>
-#include <AsyncMqttClient.h>
+#include <Homie.h>
+
+#include <globals.h>
+
 #include <NetworkSetup.h>
 
 // Use qsuba for smooth pixel colouring and qsubd for non-smooth pixel colouring
 #define qsubd(x, b)  ((x>b)?b:0)      // Digital unsigned subtraction macro. if result <0, then => 0. Otherwise, take on fixed value.
 #define qsuba(x, b)  ((x>b)?x-b:0)    // Analog Unsigned subtraction macro. if result <0, then => 0
 
-// Array sizing helper
+// Array sizing helpers
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 
 // Magic numbers
 #define DATA_PIN 13 
 #define CLOCK_PIN 14
 #define NUM_PETALS 6
-#define NUM_LEDS_PER_PETAL 5
+#define NUM_LEDS_PER_PETAL 3
 #define NUM_LEDS_CENTER 1
 #define NUM_LEDS_PETALS (NUM_PETALS * NUM_LEDS_PER_PETAL)
 #define NUM_LEDS NUM_LEDS_PETALS + NUM_LEDS_CENTER
@@ -32,6 +34,9 @@ CRGBArray<NUM_LEDS_PETALS> tempPetalLeds;
 uint8_t hue = 0;
 uint8_t gradientPosition = 0;
 uint8_t ledLoc = 0;
+
+// Global counter for tracking FPS
+uint16_t fps = 0;
 
 // Palette registration and holding variables
 extern const TProgmemPalette16 purpleAndBlackPalette PROGMEM;
@@ -58,7 +63,7 @@ void setupLEDs() {
 void setup() {
   // stopWiFiAndSleep();
   setupLEDs();
-  setupWiFi();
+  setupNetwork();
 }
 
 void nextPattern() {
@@ -67,9 +72,14 @@ void nextPattern() {
 }
 
 void loop() {
+  fps++;
+
+  Homie.loop();
+
   patterns[currentPatternNumber]();
   FastLED.show();
 
+  EVERY_N_BSECONDS ( 5 ) { syslog.logf(LOG_DEBUG, "fps: %d", fps / 5); fps = 0; }
   EVERY_N_MILLISECONDS( 20 ) { hue++; }
   EVERY_N_SECONDS( 90 ) { nextPattern(); }
 }
