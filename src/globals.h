@@ -17,10 +17,10 @@ extern HomieNode flowerNode;
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
 
 // Magic numbers
-#define DATA_PIN 13 
-#define CLOCK_PIN 14
-#define NUM_PETALS 6
-#define NUM_LEDS_PER_PETAL 3
+#define DATA_PIN 13   // Huzzah 13, D1 7
+#define CLOCK_PIN 14  // Huzzah 14, D1 5
+#define NUM_PETALS 7
+#define NUM_LEDS_PER_PETAL 6
 #define NUM_LEDS_CENTER 1
 #define NUM_LEDS_PETALS (NUM_PETALS * NUM_LEDS_PER_PETAL)
 #define NUM_LEDS NUM_LEDS_PETALS + NUM_LEDS_CENTER
@@ -51,5 +51,8 @@ typedef void (*SimplePatternList[])();
 extern SimplePatternList patterns;
 extern uint8_t currentPatternNumber;
 extern const TProgmemPalette16 purpleAndBlackPalette PROGMEM;
+
+// Enable LEDs once setup is complete
+extern bool runLEDs;
 
 #endif  // FLOWER_GLOBALS_H

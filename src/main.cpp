@@ -18,6 +18,9 @@ CRGBSet petalLeds(leds(NUM_LEDS_CENTER, NUM_LEDS_PETALS - 1));
 // Temporary petal array for writing data before manipulating it's layout
 CRGBArray<NUM_LEDS_PETALS> tempPetalLeds;
 
+// Global LED runner
+bool runLEDs = true;
+
 // Global bytes for changing values that persist across loops
 uint8_t hue = 0;
 uint8_t gradientPosition = 0;
@@ -54,10 +57,12 @@ void loop() {
 
   Homie.loop();
 
-  patterns[currentPatternNumber]();
-  FastLED.show();
+  if(runLEDs) {
+    patterns[currentPatternNumber]();
+    FastLED.show();
+  }
 
-  EVERY_N_BSECONDS ( 5 ) { syslog.logf(LOG_DEBUG, "fps: %d", fps / 5); fps = 0; }
+  EVERY_N_BSECONDS ( 5 ) { syslog.logf(LOG_INFO, "fps: %d", fps / 5); fps = 0; }
   EVERY_N_MILLISECONDS( 20 ) { hue++; }
   EVERY_N_SECONDS( 90 ) { nextPattern(); }
 }

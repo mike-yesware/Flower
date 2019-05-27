@@ -6,6 +6,7 @@
 
 #include <globals.h>
 
+void onHomieEvent();
 void stopWiFiAndSleep();
 void setupSyslog();
 void setupNetwork();
