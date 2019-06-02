@@ -52,7 +52,4 @@ extern SimplePatternList patterns;
 extern uint8_t currentPatternNumber;
 extern const TProgmemPalette16 purpleAndBlackPalette PROGMEM;
 
-// Enable LEDs once setup is complete
-extern bool runLEDs;
-
 #endif  // FLOWER_GLOBALS_H
