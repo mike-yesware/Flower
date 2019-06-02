@@ -6,9 +6,8 @@
 
 #include <globals.h>
 
-void onHomieEvent();
 void stopWiFiAndSleep();
-void setupSyslog();
 void setupNetwork();
+void setupNode();
 
 #endif  // FLOWER_NETWORK_SETUP_H
