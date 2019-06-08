@@ -8,5 +8,6 @@ void rainbowFlower();
 void insideOut();
 void sineMove();
 void plasma();
+void colorFill();
 
 #endif  // FLOWER_PATTERNS_H

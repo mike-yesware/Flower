@@ -2,7 +2,7 @@
 
 // Copy data written to tempPetalLeds out to each petal LEDs exactly as they are
 void copyLeds() {
-  petalLeds(0, NUM_LEDS_PETALS) = tempPetalLeds(0, NUM_LEDS_PETALS);
+  petalLeds(0, NUM_LEDS_PETALS - 1) = tempPetalLeds(0, NUM_LEDS_PETALS - 1);
 }
 
 // Copy the first petal's temp data to all petals display data

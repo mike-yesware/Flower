@@ -19,8 +19,8 @@ extern HomieNode flowerNode;
 // Magic numbers
 #define DATA_PIN 13   // Huzzah 13, D1 7
 #define CLOCK_PIN 14  // Huzzah 14, D1 5
-#define NUM_PETALS 7
-#define NUM_LEDS_PER_PETAL 6
+#define NUM_PETALS 6
+#define NUM_LEDS_PER_PETAL 5
 #define NUM_LEDS_CENTER 1
 #define NUM_LEDS_PETALS (NUM_PETALS * NUM_LEDS_PER_PETAL)
 #define NUM_LEDS NUM_LEDS_PETALS + NUM_LEDS_CENTER
