@@ -1,9 +1,13 @@
 #include <network_setup.h>
+#include <patterns.h>
 
 WiFiUDP udpClient;
-Syslog syslog(udpClient, "192.168.7.200", 514, "Big", "flower", LOG_USER | LOG_INFO, SYSLOG_PROTO_IETF);
+Syslog syslog(udpClient, "192.168.7.200", 514, "Swirl", "flower", LOG_USER | LOG_INFO, SYSLOG_PROTO_IETF);
 
 HomieNode flowerNode("display", "flower");
+
+// ESPAsyncE131 e131(1);
+ArtnetWifi artnet;
 
 void onHomieEvent(const HomieEvent& event) {
   switch (event.type) {
@@ -65,6 +69,18 @@ void setupNetwork() {
   Homie.disableLogging();
   Homie.onEvent(onHomieEvent);
   Homie.setup();
+}
+
+void setupE131() {
+  if (e131.begin(E131_UNICAST)) {
+    syslog.log(LOG_KERN | LOG_INFO, F("E131: Connected"));
+  } else {
+    syslog.log(LOG_KERN | LOG_INFO, F("E131: Connection failed"));
+  }
+}
+
+void setupArtnet() {
+  artnet.setArtDmxCallback(onArtnetFrame);
 }
 
 uint8_t stringToInt8(const String& string) {

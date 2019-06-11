@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <FastLED.h>
 #include <Homie.h>
+#include <ESPAsyncE131.h>
 
 // Modules
 #include <globals.h>
@@ -23,6 +24,9 @@ uint8_t hue = 0;
 uint8_t gradientPosition = 0;
 uint8_t ledLoc = 0;
 
+// Global to control the desplay of patterns
+bool runLeds = false;
+
 // Global counter for tracking FPS
 uint16_t fps = 0;
 
@@ -36,23 +40,29 @@ uint8_t currentPatternNumber = 0;
 
 void setupLEDs() {
   FastLED.addLeds<APA102, DATA_PIN, CLOCK_PIN, BGR>(leds, NUM_LEDS);
-  FastLED.setBrightness(255);
+  FastLED.setBrightness(16);
 }
 
 void setup() {
   setupLEDs();
   setupNetwork();
   setupNode();
+  // setupE131();
+  setupArtnet();
+  runLeds = Homie.isConfigured();
 }
 
 void timedLog(){
   syslog.logf(
     LOG_INFO,
-    "fps=%d free_heap=%d max_free_block=%d heap_frag=%d",
+    "fps=%d free_heap=%d max_free_block=%d heap_frag=%d e131_packets=%d e131_bad_packets=%d",
     fps / 5,
     ESP.getFreeHeap(),
     ESP.getMaxFreeBlockSize(),
-    ESP.getHeapFragmentation()
+    ESP.getHeapFragmentation(),
+    // e131.stats.num_packets,
+    // e131.stats.packet_errors
+    0,0
   );
   
   fps = 0;
@@ -68,12 +78,12 @@ void loop() {
 
   Homie.loop();
 
-  if(Homie.isConfigured) {
+  if(runLeds) {
     patterns[currentPatternNumber]();
     FastLED.show();
-  }
+  } 
 
-  EVERY_N_BSECONDS ( 5 ) { timedLog(); }
+  EVERY_N_SECONDS ( 5 ) { timedLog(); }
   EVERY_N_MILLISECONDS( 20 ) { hue++; }
-  EVERY_N_SECONDS( 90 ) { nextPattern(); }
+  // EVERY_N_SECONDS( 90 ) { nextPattern(); }
 }
