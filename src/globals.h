@@ -23,9 +23,9 @@ extern ArtnetWifi artnet;
 // Magic numbers
 #define DATA_PIN 13
 #define CLOCK_PIN 14
-#define NUM_PETALS 8
-#define NUM_LEDS_PER_PETAL 6
-#define NUM_LEDS_CENTER 1
+#define NUM_PETALS 23
+#define NUM_LEDS_PER_PETAL 3
+#define NUM_LEDS_CENTER 0
 #define NUM_LEDS_PETALS (NUM_PETALS * NUM_LEDS_PER_PETAL)
 #define NUM_LEDS NUM_LEDS_PETALS + NUM_LEDS_CENTER
 
