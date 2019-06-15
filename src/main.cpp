@@ -23,39 +23,47 @@ uint8_t hue = 0;
 uint8_t gradientPosition = 0;
 uint8_t ledLoc = 0;
 
-// Global counter for tracking FPS
+// Global to control the desplay of patterns
+bool runLeds = false;
+
+// Global counter for tracking FPS values
 uint16_t fps = 0;
+uint16_t artnetFps = 0;
 
 // Palette registration and holding variables
 CRGBPalette16 currentPalette;
 CRGBPalette16 targetPalette;
 
 // All patterns arrary and current pattern postion
-SimplePatternList patterns = { rainbowPetals, plasma, sineMove, rainbowFlower, insideOut, colorFill };
+SimplePatternList patterns = { rainbowPetals, artnetFill, plasma, sineMove, rainbowFlower, insideOut, colorFill };
 uint8_t currentPatternNumber = 0;
 
 void setupLEDs() {
   FastLED.addLeds<APA102, DATA_PIN, CLOCK_PIN, BGR>(leds, NUM_LEDS);
-  FastLED.setBrightness(255);
+  FastLED.setBrightness(16);
 }
 
 void setup() {
   setupLEDs();
   setupNetwork();
   setupNode();
+  setupArtnet();
+  runLeds = Homie.isConfigured();
 }
 
 void timedLog(){
   syslog.logf(
     LOG_INFO,
-    "fps=%d free_heap=%d max_free_block=%d heap_frag=%d",
+    "fps=%d artnet_fps=%d free_heap=%d max_free_block=%d heap_frag=%d",
     fps / 5,
+    artnetFps / 5,
     ESP.getFreeHeap(),
     ESP.getMaxFreeBlockSize(),
     ESP.getHeapFragmentation()
   );
   
   fps = 0;
+  artnetFps = 0;
 }
 
 void nextPattern() {
@@ -68,12 +76,12 @@ void loop() {
 
   Homie.loop();
 
-  if(Homie.isConfigured) {
+  if(runLeds) {
     patterns[currentPatternNumber]();
     FastLED.show();
-  }
+  } 
 
-  EVERY_N_BSECONDS ( 5 ) { timedLog(); }
+  EVERY_N_SECONDS ( 5 ) { timedLog(); }
   EVERY_N_MILLISECONDS( 20 ) { hue++; }
-  EVERY_N_SECONDS( 90 ) { nextPattern(); }
+  // EVERY_N_SECONDS( 90 ) { nextPattern(); }
 }

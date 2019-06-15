@@ -1,9 +1,13 @@
 #include <network_setup.h>
+#include <patterns.h>
 
 WiFiUDP udpClient;
 Syslog syslog(udpClient, "192.168.7.200", 514, "Big", "flower", LOG_USER | LOG_INFO, SYSLOG_PROTO_IETF);
 
 HomieNode flowerNode("display", "flower");
+
+Artnet artnet;
+byte broadcast[4] = {192, 168, 7, 255};
 
 void onHomieEvent(const HomieEvent& event) {
   switch (event.type) {
@@ -65,6 +69,12 @@ void setupNetwork() {
   Homie.disableLogging();
   Homie.onEvent(onHomieEvent);
   Homie.setup();
+}
+
+void setupArtnet() {
+  artnet.begin();
+  artnet.setBroadcast(broadcast);
+  artnet.setArtDmxCallback(onArtnetFrame);
 }
 
 uint8_t stringToInt8(const String& string) {
