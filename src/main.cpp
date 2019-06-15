@@ -35,7 +35,7 @@ CRGBPalette16 currentPalette;
 CRGBPalette16 targetPalette;
 
 // All patterns arrary and current pattern postion
-SimplePatternList patterns = { rainbowPetals, plasma, sineMove, rainbowFlower, insideOut, colorFill };
+SimplePatternList patterns = { rainbowPetals, artnetFill, plasma, sineMove, rainbowFlower, insideOut, colorFill };
 uint8_t currentPatternNumber = 0;
 
 void setupLEDs() {

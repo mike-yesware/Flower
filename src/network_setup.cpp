@@ -2,7 +2,7 @@
 #include <patterns.h>
 
 WiFiUDP udpClient;
-Syslog syslog(udpClient, "192.168.7.200", 514, "Testing", "flower", LOG_USER | LOG_INFO, SYSLOG_PROTO_IETF);
+Syslog syslog(udpClient, "192.168.7.200", 514, "Big", "flower", LOG_USER | LOG_INFO, SYSLOG_PROTO_IETF);
 
 HomieNode flowerNode("display", "flower");
 
