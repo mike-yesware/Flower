@@ -6,7 +6,6 @@ Syslog syslog(udpClient, "192.168.7.200", 514, "Big", "flower", LOG_USER | LOG_I
 
 HomieNode flowerNode("display", "flower");
 
-// ESPAsyncE131 e131(1);
 ArtnetWifi artnet;
 
 void onHomieEvent(const HomieEvent& event) {
@@ -80,6 +79,7 @@ void setupE131() {
 }
 
 void setupArtnet() {
+  artnet.begin();
   artnet.setArtDmxCallback(onArtnetFrame);
 }
 
