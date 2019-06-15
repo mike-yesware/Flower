@@ -4,14 +4,12 @@
 #include <Homie.h>
 #include <FastLED.h>
 #include <Syslog.h>
-#include <ESPAsyncE131.h>
-#include <ArtnetWifi.h>
+#include <Artnet.h>
 
 extern WiFiUDP udpClient;
 extern Syslog syslog;
 extern HomieNode flowerNode;
-extern ESPAsyncE131 e131;
-extern ArtnetWifi artnet;
+extern Artnet artnet;
 
 // Use qsuba for smooth pixel colouring and qsubd for non-smooth pixel colouring
 #define qsubd(x, b)  ((x>b)?b:0)      // Digital unsigned subtraction macro. if result <0, then => 0. Otherwise, take on fixed value.
@@ -42,8 +40,9 @@ extern uint8_t hue;
 extern uint8_t gradientPosition;
 extern uint8_t ledLoc;
 
-// Global counter for tracking FPS
+// Global counter for tracking FPS values
 extern uint16_t fps;
+extern uint16_t artnetFps;
 
 // Palette registration and holding variables
 extern const TProgmemPalette16 purpleAndBlackPalette PROGMEM;

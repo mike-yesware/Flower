@@ -6,7 +6,8 @@ Syslog syslog(udpClient, "192.168.7.200", 514, "Big", "flower", LOG_USER | LOG_I
 
 HomieNode flowerNode("display", "flower");
 
-ArtnetWifi artnet;
+Artnet artnet;
+byte broadcast[4] = {192, 168, 7, 255};
 
 void onHomieEvent(const HomieEvent& event) {
   switch (event.type) {
@@ -70,16 +71,9 @@ void setupNetwork() {
   Homie.setup();
 }
 
-void setupE131() {
-  if (e131.begin(E131_UNICAST)) {
-    syslog.log(LOG_KERN | LOG_INFO, F("E131: Connected"));
-  } else {
-    syslog.log(LOG_KERN | LOG_INFO, F("E131: Connection failed"));
-  }
-}
-
 void setupArtnet() {
   artnet.begin();
+  artnet.setBroadcast(broadcast);
   artnet.setArtDmxCallback(onArtnetFrame);
 }
 

@@ -2,7 +2,6 @@
 #include <Arduino.h>
 #include <FastLED.h>
 #include <Homie.h>
-#include <ESPAsyncE131.h>
 
 // Modules
 #include <globals.h>
@@ -27,8 +26,9 @@ uint8_t ledLoc = 0;
 // Global to control the desplay of patterns
 bool runLeds = false;
 
-// Global counter for tracking FPS
+// Global counter for tracking FPS values
 uint16_t fps = 0;
+uint16_t artnetFps = 0;
 
 // Palette registration and holding variables
 CRGBPalette16 currentPalette;
@@ -47,7 +47,6 @@ void setup() {
   setupLEDs();
   setupNetwork();
   setupNode();
-  // setupE131();
   setupArtnet();
   runLeds = Homie.isConfigured();
 }
@@ -55,17 +54,16 @@ void setup() {
 void timedLog(){
   syslog.logf(
     LOG_INFO,
-    "fps=%d free_heap=%d max_free_block=%d heap_frag=%d e131_packets=%d e131_bad_packets=%d",
+    "fps=%d artnet_fps=%d free_heap=%d max_free_block=%d heap_frag=%d",
     fps / 5,
+    artnetFps / 5,
     ESP.getFreeHeap(),
     ESP.getMaxFreeBlockSize(),
-    ESP.getHeapFragmentation(),
-    // e131.stats.num_packets,
-    // e131.stats.packet_errors
-    0,0
+    ESP.getHeapFragmentation()
   );
   
   fps = 0;
+  artnetFps = 0;
 }
 
 void nextPattern() {
