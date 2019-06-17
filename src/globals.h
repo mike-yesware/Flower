@@ -34,9 +34,6 @@ extern HomieSetting<long> numLedsCenterSetting;
 
 // Real led array used for display to the strips
 extern CRGBArray<100> leds;
-// Subsets for seperating the center from the petals
-// extern CRGBSet centerLeds;
-// extern CRGBSet petalLeds;
 // Temporary petal array for writing data before manipulating it's layout
 extern CRGBArray<100> tempPetalLeds;
 
@@ -54,7 +51,7 @@ extern const TProgmemPalette16 purpleAndBlackPalette PROGMEM;
 extern CRGBPalette16 currentPalette;
 extern CRGBPalette16 targetPalette;
 
-// All patterns arrary and current pattern post–ion
+// All patterns arrary and current pattern postion
 typedef void (*SimplePatternList[])();
 extern SimplePatternList patterns;
 extern uint8_t currentPatternNumber;
