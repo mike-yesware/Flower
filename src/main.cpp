@@ -11,12 +11,12 @@
 #include <palettes.h>
 
 // Real led array used for display to the strips
-CRGBArray<NUM_LEDS> leds;
+CRGBArray<100> leds;
 // Subsets for seperating the center from the petals
-CRGBSet centerLeds(leds(0, NUM_LEDS_CENTER - 1));
-CRGBSet petalLeds(leds(NUM_LEDS_CENTER, NUM_LEDS_PETALS - 1));
-// Temporary petal array for writing data before manipulating it's layout
-CRGBArray<NUM_LEDS_PETALS> tempPetalLeds;
+// CRGBSet centerLeds(leds(0, NUM_LEDS_CENTER - 1));
+// CRGBSet petalLeds(leds(NUM_LEDS_CENTER, NUM_LEDS_PETALS - 1));
+// Temporary petal array for writing data before manipulating its layout
+CRGBArray<100> tempPetalLeds;
 
 // Global bytes for changing values that persist across loops
 uint8_t hue = 0;
@@ -39,14 +39,14 @@ SimplePatternList patterns = { rainbowPetals, artnetFill, plasma, sineMove, rain
 uint8_t currentPatternNumber = 0;
 
 void setupLEDs() {
-  FastLED.addLeds<APA102, DATA_PIN, CLOCK_PIN, BGR>(leds, NUM_LEDS);
+  FastLED.addLeds<APA102, DATA_PIN, CLOCK_PIN, BGR>(leds, 100);
   FastLED.setBrightness(16);
 }
 
 void setup() {
-  setupLEDs();
   setupNetwork();
   setupNode();
+  setupLEDs();
   setupArtnet();
   runLeds = Homie.isConfigured();
 }
@@ -54,9 +54,13 @@ void setup() {
 void timedLog(){
   syslog.logf(
     LOG_INFO,
-    "fps=%d artnet_fps=%d free_heap=%d max_free_block=%d heap_frag=%d",
+    "pattern=%d fps=%d artnet_fps=%d center_leds=%ld petals=%ld leds_per_petal=%ld free_heap=%d max_free_block=%d heap_frag=%d",
+    currentPatternNumber,
     fps / 5,
     artnetFps / 5,
+    numLedsCenterSetting.get(),
+    numPetalsSetting.get(),
+    numLedsPerPetalSetting.get(),
     ESP.getFreeHeap(),
     ESP.getMaxFreeBlockSize(),
     ESP.getHeapFragmentation()

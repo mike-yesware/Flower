@@ -24,16 +24,21 @@ extern Artnet artnet;
 #define NUM_PETALS 6
 #define NUM_LEDS_PER_PETAL 5
 #define NUM_LEDS_CENTER 1
-#define NUM_LEDS_PETALS (NUM_PETALS * NUM_LEDS_PER_PETAL)
-#define NUM_LEDS NUM_LEDS_PETALS + NUM_LEDS_CENTER
+// #define NUM_LEDS_PETALS (NUM_PETALS * NUM_LEDS_PER_PETAL)
+// #define NUM_LEDS NUM_LEDS_PETALS + NUM_LEDS_CENTER
+
+// Homie Settings
+extern HomieSetting<long> numPetalsSetting;
+extern HomieSetting<long> numLedsPerPetalSetting;
+extern HomieSetting<long> numLedsCenterSetting;
 
 // Real led array used for display to the strips
-extern CRGBArray<NUM_LEDS> leds;
+extern CRGBArray<100> leds;
 // Subsets for seperating the center from the petals
-extern CRGBSet centerLeds;
-extern CRGBSet petalLeds;
+// extern CRGBSet centerLeds;
+// extern CRGBSet petalLeds;
 // Temporary petal array for writing data before manipulating it's layout
-extern CRGBArray<NUM_LEDS_PETALS> tempPetalLeds;
+extern CRGBArray<100> tempPetalLeds;
 
 // Global bytes for changing values that persist across loops
 extern uint8_t hue;
@@ -49,7 +54,7 @@ extern const TProgmemPalette16 purpleAndBlackPalette PROGMEM;
 extern CRGBPalette16 currentPalette;
 extern CRGBPalette16 targetPalette;
 
-// All patterns arrary and current pattern postion
+// All patterns arrary and current pattern post–ion
 typedef void (*SimplePatternList[])();
 extern SimplePatternList patterns;
 extern uint8_t currentPatternNumber;
