@@ -2,59 +2,15 @@
 #include <patterns.h>
 
 WiFiUDP udpClient;
-Syslog syslog(udpClient, "192.168.7.200", 514, "Big", "flower", LOG_USER | LOG_INFO, SYSLOG_PROTO_IETF);
+Syslog syslog(udpClient, SYSLOG_PROTO_IETF);
 
 HomieNode flowerNode("display", "flower");
+HomieSetting<long> numPetalsSetting("numPetals", "The number of petals on this flower");
+HomieSetting<long> numLedsPerPetalSetting("numLedsPerPetal", "The number of LEDs in each petal");
+HomieSetting<long> numLedsCenterSetting("numLedsCenter", "The number of LEDs in this flower's center");
 
 Artnet artnet;
 byte broadcast[4] = {192, 168, 7, 255};
-
-void onHomieEvent(const HomieEvent& event) {
-  switch (event.type) {
-    case HomieEventType::STANDALONE_MODE:
-      syslog.log(LOG_KERN | LOG_INFO, F("Homie: Standalone mode started"));
-      break;
-    case HomieEventType::CONFIGURATION_MODE:
-      syslog.log(LOG_KERN | LOG_INFO, F("Homie: Configuration mode started"));
-      break;
-    case HomieEventType::NORMAL_MODE:
-      syslog.log(LOG_KERN | LOG_INFO, F("Homie: Normal mode started"));
-      break;
-    case HomieEventType::OTA_STARTED:
-      syslog.log(LOG_KERN | LOG_INFO, F("Homie: OTA started"));
-      break;
-    case HomieEventType::OTA_PROGRESS:
-      syslog.logf(LOG_KERN | LOG_INFO, "Homie: OTA progress, %d/%d", event.sizeDone, event.sizeTotal);
-      break;
-    case HomieEventType::OTA_FAILED:
-      syslog.log(LOG_KERN | LOG_ERR, F("Homie: OTA failed"));
-      break;
-    case HomieEventType::OTA_SUCCESSFUL:
-      syslog.log(LOG_KERN | LOG_INFO, F("Homie: OTA successful"));
-      break;
-    case HomieEventType::ABOUT_TO_RESET:
-      syslog.log(LOG_KERN | LOG_INFO, F("Homie: About to reset"));
-      break;
-    case HomieEventType::WIFI_CONNECTED:
-      syslog.logf(LOG_KERN | LOG_INFO, "Homie: Wi-Fi connected, IP: %s, gateway: %s, mask: %s", event.ip.toString().c_str(), event.gateway.toString().c_str(), event.mask.toString().c_str());
-      break;
-    case HomieEventType::WIFI_DISCONNECTED:
-      syslog.logf(LOG_KERN | LOG_INFO, "Homie: Wi-Fi disconnected, reason: %d", (int8_t)event.wifiReason);
-      break;
-    case HomieEventType::MQTT_READY:
-      syslog.log(LOG_KERN | LOG_INFO, F("Homie: MQTT connected"));
-      break;
-    case HomieEventType::MQTT_DISCONNECTED:
-      syslog.logf(LOG_KERN | LOG_INFO, "Homie: MQTT disconnected, reason: %d", (int8_t)event.mqttReason);
-      break;
-    case HomieEventType::MQTT_PACKET_ACKNOWLEDGED:
-      syslog.logf(LOG_KERN | LOG_INFO, "Homie: MQTT packet acknowledged, packetId: %d", event.packetId);
-      break;
-    case HomieEventType::READY_TO_SLEEP:
-      syslog.log(LOG_KERN | LOG_INFO, F("Homie: Ready to sleep"));
-      break;
-  }
-}
 
 void stopWiFiAndSleep() {
   WiFi.disconnect();
@@ -67,8 +23,23 @@ void setupNetwork() {
   Homie_setFirmware("flower", "0.0.1");
   Homie_setBrand("garden");
   Homie.disableLogging();
-  Homie.onEvent(onHomieEvent);
+
+  numPetalsSetting.setDefaultValue(NUM_PETALS).setValidator([] (long candidate) {
+    return candidate >= 1;
+  });
+  numLedsPerPetalSetting.setDefaultValue(NUM_LEDS_PER_PETAL).setValidator([] (long candidate) {
+    return candidate >= 1;
+  });
+  numLedsCenterSetting.setDefaultValue(NUM_LEDS_CENTER).setValidator([] (long candidate) {
+    return candidate >= 0;
+  });
+
   Homie.setup();
+
+  syslog.server(Homie.getConfiguration().mqtt.server.host, 514);
+  syslog.deviceHostname(Homie.getConfiguration().deviceId);
+  syslog.appName("flower");
+  syslog.defaultPriority(LOG_USER | LOG_INFO);
 }
 
 void setupArtnet() {

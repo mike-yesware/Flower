@@ -1,21 +1,31 @@
 #include <led_utils.h>
 
+// Calculate the number of petal LEDs based on current settings
+uint8_t numLedsPetals() {
+  return numPetalsSetting.get() * numLedsPerPetalSetting.get();
+}
+
+// Calculate the number of total LEDs based on current settings
+uint8_t numLeds() {
+  return numLedsCenterSetting.get() + numLedsPetals();
+}
+
 // Copy data written to tempPetalLeds out to each petal LEDs exactly as they are
 void copyLeds() {
-  petalLeds(0, NUM_LEDS_PETALS - 1) = tempPetalLeds(0, NUM_LEDS_PETALS - 1);
+  leds(numLedsCenterSetting.get(), numLedsCenterSetting.get() + numLedsPetals() - 1) = tempPetalLeds(0, numLedsPetals() - 1);
 }
 
 // Copy the first petal's temp data to all petals display data
 void remapFirstToAll() {
-  for(uint8_t petal = 0; petal < NUM_PETALS; petal++) {
-    petalLeds(petal * NUM_LEDS_PER_PETAL,
-        (petal * NUM_LEDS_PER_PETAL) + NUM_LEDS_PER_PETAL - 1) = tempPetalLeds(0, NUM_LEDS_PER_PETAL - 1);
+  for(uint8_t petal = 0; petal < numPetalsSetting.get(); petal++) {
+    leds(numLedsCenterSetting.get() + (petal * numLedsPerPetalSetting.get()),
+        (petal * numLedsPerPetalSetting.get()) + numLedsPerPetalSetting.get() + numLedsCenterSetting.get() - 1) = tempPetalLeds(0, numLedsPerPetalSetting.get() - 1);
   }
 }
 
 // Given a zero indexed petal number, fill with the supplied color
 void fillPetal(uint8_t petal, CRGB color) {
-  petalLeds(petal * NUM_LEDS_PER_PETAL, (petal * NUM_LEDS_PER_PETAL) + NUM_LEDS_PER_PETAL - 1) = color;
+  leds(numLedsCenterSetting.get() + (petal * numLedsPerPetalSetting.get()), (petal * numLedsPerPetalSetting.get()) + numLedsPerPetalSetting.get() + numLedsCenterSetting.get() - 1) = color;
 }
 
 // Copy data written to tempPetalLeds out to each petal in full.
@@ -25,7 +35,7 @@ void fillPetal(uint8_t petal, CRGB color) {
 // ...
 // 5 == sixth petal == 16, 17, 18 or (5 * 3) + 1 to (5 * 3) + 3
 void remapSolid() {
-  for(uint8_t petal = 0; petal < NUM_PETALS; petal++) {
+  for(uint8_t petal = 0; petal < numPetalsSetting.get(); petal++) {
     fillPetal(petal, tempPetalLeds[petal]);
   }
 }
@@ -40,16 +50,16 @@ void remapSolid() {
 // 10 == sixth petal inside == 16 or ((10 / 2) * 3) + 1
 // 11 == sixth petal outside == 15 and 17 or ((11 / 2) * 3) and ((11 / 2) * 3) + 2
 void remap12() {
-  for(uint8_t virtualPetal = 0; virtualPetal < NUM_PETALS * 2; virtualPetal++) {
+  for(uint8_t virtualPetal = 0; virtualPetal < numPetalsSetting.get() * 2; virtualPetal++) {
     switch(virtualPetal % 2)
     {
       case false:  // even
-        petalLeds[((virtualPetal / 2) * 3) + 1] = tempPetalLeds[virtualPetal];
+        leds[((virtualPetal / 2) * 3) + numLedsCenterSetting.get() + 1] = tempPetalLeds[virtualPetal];
         
         break;
       case true:  // odd
-        petalLeds[((virtualPetal / 2) * 3)] = tempPetalLeds[virtualPetal];
-        petalLeds[((virtualPetal / 2) * 3) + 2] = tempPetalLeds[virtualPetal];
+        leds[((virtualPetal / 2) * 3) + numLedsCenterSetting.get()] = tempPetalLeds[virtualPetal];
+        leds[((virtualPetal / 2) * 3) + numLedsCenterSetting.get() + 2] = tempPetalLeds[virtualPetal];
 
         break;
     }
@@ -58,9 +68,9 @@ void remap12() {
 
 // Flip data on each petal such that the outside LED is now the inside LED and vice versa.
 void remapDirection() {
-  for(uint8_t petal = 0; petal < NUM_PETALS; petal++) {
-    petalLeds((petal * NUM_LEDS_PER_PETAL), (petal * NUM_LEDS_PER_PETAL) + NUM_LEDS_PER_PETAL - 1) = tempPetalLeds(
-        (petal * NUM_LEDS_PER_PETAL) + NUM_LEDS_PER_PETAL - 1, (petal * NUM_LEDS_PER_PETAL));
+  for(uint8_t petal = 0; petal < numPetalsSetting.get(); petal++) {
+    leds((petal * numLedsPerPetalSetting.get()) + numLedsCenterSetting.get(), (petal * numLedsPerPetalSetting.get()) + numLedsPerPetalSetting.get() + numLedsCenterSetting.get() - 1) = tempPetalLeds(
+        (petal * numLedsPerPetalSetting.get()) + numLedsPerPetalSetting.get() - 1, (petal * numLedsPerPetalSetting.get()));
   }
 }
 
@@ -69,9 +79,9 @@ void remapDirection() {
 void remapClockwise() {
   uint8_t interation = 0;
 
-  for(int8_t led = NUM_LEDS_PER_PETAL - 1; led  < 0; led--) {
-    for(uint8_t petal = 0; petal < NUM_PETALS; petal++) {
-      petalLeds[led + (petal * NUM_LEDS_PER_PETAL)] = tempPetalLeds[interation];
+  for(int8_t led = numLedsPerPetalSetting.get() - 1; led  < 0; led--) {
+    for(uint8_t petal = 0; petal < numPetalsSetting.get(); petal++) {
+      leds[led + (petal * numLedsPerPetalSetting.get()) + numLedsCenterSetting.get()] = tempPetalLeds[interation];
 
       interation++;
     }
