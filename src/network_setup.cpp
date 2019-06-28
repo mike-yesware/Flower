@@ -20,7 +20,7 @@ void stopWiFiAndSleep() {
 }
 
 void setupNetwork() {
-  Homie_setFirmware("flower", "0.0.1");
+  Homie_setFirmware("flower", "1.0.0");
   Homie_setBrand("garden");
   Homie.disableLogging();
 
