@@ -1,22 +1,22 @@
 {
   "wifi": {
-    "ssid": "gunsmoke",
+    "ssid": "network",
     "password": "xxx"
   },
   "mqtt": {
-    "host": "192.168.7.200",
+    "host": "192.168.0.200",
     "port": 1883,
     "base_topic": "garden/",
     "auth": false
   },
-  "name": "xx",
+  "name": "Sunflower",
   "ota": {
     "enabled": true
   },
-  "device_id": "xx",
+  "device_id": "sunflower",
   "settings": {
-    "numPetals": 6,
+    "numPetals": 23,
     "numLedsPerPetal": 3,
-    "numLedsCenter": 1
+    "numLedsCenter": 7
   }
 }
